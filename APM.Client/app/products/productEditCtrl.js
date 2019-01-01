@@ -15,6 +15,10 @@
             function (data) {
                 vm.product = data;
                 vm.originalProduct = angular.copy(data);
+            },
+            function (response) {
+                vm.message = response.statusText + "\r\n";
+                vm.message += response.data.exceptionMessage;
             });
 
         if (vm.product && vm.product.productId) {
@@ -26,17 +30,25 @@
 
         vm.submit = function () {
             if (vm.product.productId) {
-                vm.product.$update({ id: vm.product.productId }),
+                vm.product.$update({ id: vm.product.productId },
                     function (data) {
                         vm.message = "...Save Completed";
-                    }
+                    },
+                    function (response) {
+                        vm.message = response.statusText + "\r\n";
+                        if (response.data.exceptionMessage)
+                            vm.message += response.data.exceptionMessage;
+                    });
             }
             else {
                 vm.product.$save(
                     function (data) {
                         vm.originalProduct = angular.copy(data);
                         vm.message = "...Save completed";
-                    })
+                    },
+                    function (response) {
+                        vm.message = response.statusText + "\r\n";
+                    });
             }
         };
 
